@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+</head>
+<body>
+    <h1>Current weather</h1>
+    <img id="img-weather" src="" alt="No data">
+
+    <script>
+        const webSocket = new WebSocket('ws://localhost:8080/weather')
+
+        webSocket.onopen = (event) => {
+            console.log('WS OPEN', event)
+        }
+
+        webSocket.onmessage = (event) => {
+            console.log('WS MESSAGE', event)
+            const newWeather = JSON.parse(event.data)
+            const imgWeather = document.querySelector('#img-weather')
+
+            let filename = '';
+            if (newWeather.type === 'SUNNY') {
+                filename = `img/${newWeather.type}_${newWeather.time}.png`
+            } else {
+                filename = `img/${newWeather.type}.png`
+            }
+            imgWeather.src = filename
+        }
+
+        webSocket.onerror = (event) => {
+            console.log('WS ERROR', event)
+        }
+
+        webSocket.onclose = (event) => {
+            console.log('WS CLOSE', event)
+        }
+    </script>
+</body>
+</html>
